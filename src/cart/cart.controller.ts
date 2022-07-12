@@ -1,15 +1,20 @@
 import { Controller, Post, Body, Request, UseGuards, Delete, NotFoundException, Param } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
-import { JwtAuthGuard } from 'src/auth/gaurd/jwt.guard';
-import { RolesGuard } from 'src/auth/gaurd/roles.guard';
-import { ItemDTO } from 'src/user/dto/item.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CartService } from './cart.service';
+import { ItemDTO } from './dtos/item.dto';
 
+@ApiTags("Cart")
 @Controller('cart')
 export class CartController {
   constructor(private cartService: CartService) { }
 
+  @ApiOperation({ summary: 'add item to cart' })
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiBadRequestResponse({ description: 'can not add to cart' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Post('/')
@@ -19,6 +24,9 @@ export class CartController {
     return cart;
   }
 
+  @ApiOperation({ summary: 'remove from for cart' })
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiBadRequestResponse({ description: 'can not remove item from cart' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Delete('/')
@@ -29,6 +37,9 @@ export class CartController {
     return cart;
   }
 
+  @ApiOperation({ summary: 'delete from cart via id' })
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiBadRequestResponse({ description: 'can not delete item from cart' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Delete('/:id')
